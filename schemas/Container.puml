@@ -1,0 +1,37 @@
+@startuml
+!include <C4/C4_Container>
+
+title Диаграмма контейнеров системы WarmHouse
+
+Person(user, "Пользователь", "Клиент системы WarmHouse")
+Person(admin, "Администратор", "Администратор системы WarmHouse")
+
+System_Ext(sensors, "Датчики температуры", "Установлены в доме пользователя")
+
+System_Boundary(warmHouse, "Система WarmHouse", "Серверное приложение для управления отоплением (SaaS)") {
+    Container(webapp, "WEB-приложение", "React|Vue", "Обработчик операций пользователей")
+    Container(gateway, "API Gateway", "Go|Node.js", "Единая точка входа, обработка пользовательских запросов")
+
+    Container(auth, "Сервис аутентификации", "Go", "Управление аккаунтами и обработка аутентификации")
+    Container(devices, "Сервис управления устройствами", "Node.js", "Обработка запросов по работе с устройствами")
+    Container(telemetry, "Сервис телеметрии", "Go", "Сбор данных с устройств")
+    ContainerDb(postgresql, "База данных", "PostgreSQL", "Хранение пользователей, устройств")
+}
+
+Rel(user, webapp, "Просмотр текущего состояния устройств (датчиков)", "HTTP")
+Rel(admin, webapp, "Добавление / удаление / изменение устройств (датчиков)", "HTTP")
+
+Rel(webapp, gateway, "Обработка пользовательских операций", "HTTP/REST API")
+
+Rel(gateway, auth, "Запросы на аутентификацию пользователей", "HTTP/REST API")
+Rel(gateway, auth, "Запросы на изменение данных пользователей", "HTTP/REST API")
+Rel(gateway, devices, "Запросы на изменение данных об устройствах", "HTTP/REST API")
+Rel(gateway, telemetry, "Запросы на получение информации с устройств", "HTTP/REST API")
+
+Rel(telemetry, sensors, "Запрос на получение информации с устройств", "HTTP/REST API")
+
+Rel(devices, postgresql, "CRUD-операции с данными по устройствам", "SQL")
+Rel(auth, postgresql, "CRUD-операции с пользовательскими данными", "SQL")
+Rel(telemetry, postgresql, "CRUD-операции с данными устройств", "SQL")
+
+@enduml

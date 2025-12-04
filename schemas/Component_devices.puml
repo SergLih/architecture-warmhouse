@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+
+title Диаграмма компонентов системы WarmHouse (сервис управления устройствами)
+
+Container(gateway, "API Gateway", "Go|Node.js", "Обработчик пользовательских запросов")
+
+Container(devices, "Сервис управления устройствами", "Node.js") {
+    Component(DevicesController, "DevicesController", "", "Обработка CRUD-операций с устройствами")
+    Component(DevicesServiceLayer, "ServiceLayer", "", "Бизнес-логика")
+    Component(DevicesRepositoryLayer, "RepositoryLayer", "", "Работа с данными")
+}
+
+ContainerDb(postgresql, "База данных", "PostgreSQL", "Хранение пользователей, устройств")
+
+Rel(gateway, devices, "Перенаправление запросов об устройствах на соответствующий сервис")
+
+Rel(DevicesController, DevicesServiceLayer, "Вызов бизнес-логики")
+Rel(DevicesServiceLayer, DevicesRepositoryLayer, "CRUD-операции с данными устройств")
+Rel(DevicesRepositoryLayer, postgresql, "CRUD-операции с данными устройств")
+
+@enduml

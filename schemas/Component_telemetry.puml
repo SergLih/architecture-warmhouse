@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+
+title Диаграмма компонентов системы WarmHouse (сервис телеметрии)
+
+Container(gateway, "API Gateway", "Go|Node.js", "Обработчик пользовательских запросов")
+
+Container(telemetry, "Сервис телеметрии", "Go") {
+    Component(TelemetryController, "TelemetryController", "", "Обработка запросов на получение данных с устройств")
+    Component(TelemetryServiceLayer, "ServiceLayer", "", "Бизнес-логика")
+    Component(TelemetryRequestSenderLayer, "RequestSenderLayer", "", "Отправитель запросов")
+    Component(TelemetryRepositoryLayer, "RepositoryLayer", "", "Работа с данными")
+}
+
+System_Ext(sensors, "Датчики температуры", "Установлены в доме пользователя")
+
+ContainerDb(postgresql, "База данных", "PostgreSQL", "Хранение пользователей, устройств")
+
+Rel(gateway, telemetry, "Перенаправление запросов получения данных с устройств на соответствующий сервис")
+
+
+Rel(TelemetryController, TelemetryServiceLayer, "Вызов бизнес-логики")
+
+Rel(TelemetryServiceLayer, TelemetryRequestSenderLayer, "Получение метаданных устройства для анализа запроса")
+Rel(TelemetryRepositoryLayer, postgresql, "CRUD-операции с данными устройств")
+Rel(TelemetryRequestSenderLayer, TelemetryRepositoryLayer, "CRUD-операции с данными устройств")
+Rel(TelemetryRequestSenderLayer, sensors, "Запросы на получение данных с устройств (датчиков)")
+
+@enduml

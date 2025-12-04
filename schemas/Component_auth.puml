@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+
+title Диаграмма компонентов системы WarmHouse (сервис аутентификации)
+
+Container(gateway, "API Gateway", "Go|Node.js", "Обработчик пользовательских запросов")
+
+Container(auth, "Сервис аутентификации", "Go") {
+    Component(UserController, "UserController", "", "Обработка CRUD-операций с пользователями")
+    Component(AuthController, "AuthController", "", "Обработка запросов аутентификации")
+    Component(AuthServiceLayer, "ServiceLayer", "", "Бизнес-логика")
+    Component(AuthRepositoryLayer, "RepositoryLayer", "", "Работа с данными")
+}
+
+ContainerDb(postgresql, "База данных", "PostgreSQL", "Хранение пользователей, устройств")
+
+Rel(gateway, auth, "Перенаправление запросов о пользователях на соответствующий сервис")
+
+Rel(UserController, AuthServiceLayer, "Вызов бизнес-логики")
+Rel(AuthController, AuthServiceLayer, "Вызов бизнес-логики")
+Rel(AuthServiceLayer, AuthRepositoryLayer, "CRUD-операции с пользовательскими данными")
+Rel(AuthRepositoryLayer, postgresql, "CRUD-операции с пользовательскими данными")
+
+@enduml

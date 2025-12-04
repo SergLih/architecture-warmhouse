@@ -1,0 +1,28 @@
+@startuml C4 Code
+!include <C4/C4_Component>
+
+title Диаграмма кода компонента TelemetryService системы WarmHouse
+
+class TelemetryData {
+    + String deviceId
+    + Date timestamp
+    + Map<String, Object> metrics
+
+    + void recordMetric(String metricName, Object value)
+    + Map<String, Object> getMetrics()
+}
+
+class TelemetryRepository {
+    + void saveTelemetry(TelemetryData data)
+    + List<TelemetryData> getTelemetryByDevice(String deviceId)
+}
+
+class TelemetryService {
+    + boolean collectData(TelemetryData data)
+    + List<TelemetryData> fetchDeviceTelemetry(String deviceId)
+    + void processTelemetry(TelemetryData data)
+}
+
+TelemetryService ..> TelemetryRepository : uses
+TelemetryData ..> TelemetryRepository : stored in
+@enduml

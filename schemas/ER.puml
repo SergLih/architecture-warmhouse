@@ -1,0 +1,58 @@
+@startuml ER Diagram
+
+entity User {
+  *user_id : INT <<PK>>
+  --
+  name : VARCHAR
+  email : VARCHAR
+  phone : VARCHAR
+  registered_at : DATETIME
+}
+
+entity House {
+  *house_id : INT <<PK>>
+  --
+  address : VARCHAR
+  user_id : INT <<FK>>
+}
+
+entity DeviceType {
+  *type_id : INT <<PK>>
+  --
+  name : VARCHAR
+  description : TEXT
+}
+
+entity Device {
+  *device_id : INT <<PK>>
+  --
+  serial_number : VARCHAR
+  status : VARCHAR
+  house_id : INT <<FK>>
+  type_id : INT <<FK>>
+}
+
+entity TelemetryData {
+  *telemetry_id : INT <<PK>>
+  --
+  device_id : INT <<FK>>
+  timestamp : DATETIME
+  metric_name : VARCHAR
+  metric_value : VARCHAR
+}
+
+entity Module {
+  *module_id : INT <<PK>>
+  --
+  device_id : INT <<FK>>
+  name : VARCHAR
+  status : VARCHAR
+}
+
+User ||--o{ House : владеет
+House ||--o{ Device : содержит
+Device ||--o{ TelemetryData : генерирует
+Device }|--|| DeviceType : имеет
+Device ||--o{ Module : содержит
+
+@enduml
