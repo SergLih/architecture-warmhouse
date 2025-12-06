@@ -40,7 +40,7 @@ def get_response(location, sensorID):
     return {
         "value": 18.0 + float(time.time() * 1e9 % 10) + (float(time.time() * 1e9) % 100) / 100.0,
         "unit": "°C",
-        "timestamp": datetime.datetime.now().isoformat(),
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00', 'Z'),
         "location": location,
         "status": "OK",
         "sensor_id": sensorID,
