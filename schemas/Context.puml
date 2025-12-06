@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Context>
+
+title Диаграмма контекста системы WarmHouse
+
+Person(user, "Пользователь", "Клиент системы WarmHouse")
+Person(admin, "Администратор", "Администратор системы WarmHouse")
+
+System_Boundary(warmHouse, "Система умного дома") {
+	System(warmHouseApp, "Приложение WarmHouse", "Серверное приложение для управления отоплением", $type="Go")
+}
+
+System_Ext(sensors, "Датчики температуры", "Установлены в доме пользователя")
+
+Rel(user, warmHouseApp, "Просмотр текущего состояния устройств (датчиков)", "HTTP/REST API")
+
+Rel(admin, warmHouseApp, "Добавление / удаление / изменение устройств (датчиков)", "HTTP/REST API")
+
+Rel(warmHouseApp, sensors, "Получает актуальные данные о температуре с датчиков", "HTTP/REST API")
+
+@enduml

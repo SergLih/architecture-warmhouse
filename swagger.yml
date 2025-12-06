@@ -1,0 +1,465 @@
+openapi: 3.0.3
+info:
+  title: Smart Home Microservices API
+  description: REST API для взаимодействия между микросервисами системы WarmHouse
+  version: 1.0.0
+servers:
+  - url: http://localhost
+
+paths:
+  /users/{user_id}:
+    get:
+      summary: Получить информацию о пользователе
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о пользователе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Пользователь не найден
+    delete:
+      summary: Удалить пользователя
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Пользователь удален
+        '404':
+          description: Пользователь не найден
+
+  /users:
+    post:
+      summary: Создать нового пользователя
+      requestBody:
+        description: Данные нового пользователя
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+            examples:
+              example:
+                value:
+                  name: 'Новый Пользователь'
+                  email: 'newuser@example.com'
+                  password: 'securepassword'
+      responses:
+        '201':
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: Обновить данные пользователя
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Обновленные данные пользователя
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+      responses:
+        '200':
+          description: Данные обновлены
+        '404':
+          description: Пользователь не найден
+
+  /houses/{house_id}:
+    get:
+      summary: Получить информацию о доме
+      parameters:
+        - name: house_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о доме
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/House'
+        '404':
+          description: Дом не найден
+
+  /devices/{device_id}:
+    get:
+      summary: Получить информацию об устройстве
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация об устройстве
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '404':
+          description: Устройство не найдено
+    put:
+      summary: Обновить статус устройства
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Новое состояние устройства
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceStatusUpdate'
+      responses:
+        '200':
+          description: Статус обновлен
+        '404':
+          description: Устройство не найдено
+    delete:
+      summary: Удалить устройство
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Устройство удалено
+        '404':
+          description: Устройство не найдено
+
+  /devices:
+    post:
+      summary: Создать новое устройство
+      requestBody:
+        description: Данные нового устройства
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewDevice'
+      responses:
+        '201':
+          description: Устройство создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+
+  /telemetry/{device_id}/latest:
+    get:
+      summary: Получить последние данные телеметрии устройства
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Последние данные телеметрии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelemetryData'
+        '404':
+          description: Данных не найдено
+
+  /modules/{module_id}:
+    get:
+      summary: Получить информацию о модуле
+      parameters:
+        - name: module_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о модуле
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '404':
+          description: Модуль не найден
+    put:
+      summary: Обновить статус модуля
+      parameters:
+        - name: module_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Обновленное состояние модуля
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleStatusUpdate'
+      responses:
+        '200':
+          description: Статус модуля обновлен
+        '404':
+          description: Модуль не найден
+
+components:
+  schemas:
+    User:
+      type: object
+      description: Информация о пользователе системы
+      properties:
+        user_id:
+          type: integer
+          description: Уникальный идентификатор пользователя
+        name:
+          type: string
+          description: Имя пользователя
+        email:
+          type: string
+          description: Электронная почта
+        phone:
+          type: string
+          description: Телефон
+        registered_at:
+          type: string
+          format: date-time
+          description: Время регистрации
+      example:
+        user_id: 1
+        name: "Иван Иванов"
+        email: "ivan@example.com"
+        phone: "+79991234567"
+        registered_at: "2023-07-01T10:00:00Z"
+
+    NewUser:
+      type: object
+      description: Данные для создания нового пользователя
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          description: Имя пользователя
+        email:
+          type: string
+          description: Электронная почта
+        password:
+          type: string
+          description: Пароль пользователя
+      example:
+        name: "Новый Пользователь"
+        email: "newuser@example.com"
+        password: "securepassword"
+
+    UpdateUser:
+      type: object
+      description: Данные для обновления информации о пользователе
+      properties:
+        name:
+          type: string
+          description: Имя пользователя
+        email:
+          type: string
+          description: Электронная почта
+        phone:
+          type: string
+          description: Телефон
+      example:
+        name: "Обновленное Имя"
+        email: "updated@example.com"
+        phone: "+79990001122"
+
+    House:
+      type: object
+      description: Информация о доме
+      properties:
+        house_id:
+          type: integer
+          description: Уникальный идентификатор дома
+        address:
+          type: string
+          description: Адрес дома
+        user_id:
+          type: integer
+          description: Идентификатор владельца
+      example:
+        house_id: 10
+        address: "ул. Пушкина, д. 10, кв. 5"
+        user_id: 1
+
+    Device:
+      type: object
+      description: Информация об устройстве
+      properties:
+        device_id:
+          type: integer
+          description: Уникальный идентификатор устройства
+        serial_number:
+          type: string
+          description: Серийный номер устройства
+        status:
+          type: string
+          description: Текущий статус устройства (например, "online", "offline")
+        house_id:
+          type: integer
+          description: Идентификатор дома, к которому подключено устройство
+        type_id:
+          type: integer
+          description: Идентификатор типа устройства
+        device_type:
+          $ref: '#/components/schemas/DeviceType'
+        house:
+          $ref: '#/components/schemas/House'
+      example:
+        device_id: 100
+        serial_number: "SN123456789"
+        status: "online"
+        house_id: 10
+        type_id: 2
+
+    NewDevice:
+      type: object
+      description: Данные для добавления нового устройства
+      required:
+        - serial_number
+        - house_id
+        - type_id
+      properties:
+        serial_number:
+          type: string
+          description: Серийный номер
+        house_id:
+          type: integer
+          description: Идентификатор дома
+        type_id:
+          type: integer
+          description: Идентификатор типа устройства
+        status:
+          type: string
+          description: Статус устройства
+      example:
+        serial_number: "SN987654321"
+        house_id: 10
+        type_id: 3
+        status: "offline"
+
+    DeviceStatusUpdate:
+      type: object
+      description: Обновление статуса устройства
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: Новый статус устройства
+      example:
+        status: "offline"
+
+    DeviceType:
+      type: object
+      description: Тип устройства
+      properties:
+        type_id:
+          type: integer
+          description: Идентификатор типа
+        name:
+          type: string
+          description: Название типа
+        description:
+          type: string
+          description: Описание типа
+      example:
+        type_id: 2
+        name: "Термостат"
+        description: "Устройство для контроля температуры"
+
+    TelemetryData:
+      type: object
+      description: Данные телеметрии устройства
+      properties:
+        telemetry_id:
+          type: integer
+          description: Уникальный идентификатор telemetry записи
+        device_id:
+          type: integer
+          description: Идентификатор устройства
+        timestamp:
+          type: string
+          format: date-time
+          description: Время измерения
+        metric_name:
+          type: string
+          description: Название метрики (например, температура)
+        metric_value:
+          type: string
+          description: Значение метрики
+      example:
+        telemetry_id: 500
+        device_id: 100
+        timestamp: "2023-07-01T12:00:00Z"
+        metric_name: "temperature"
+        metric_value: "22.5"
+
+    Module:
+      type: object
+      description: Информация о модуле устройства
+      properties:
+        module_id:
+          type: integer
+          description: Уникальный идентификатор модуля
+        device_id:
+          type: integer
+          description: Идентификатор устройства, которому принадлежит модуль
+        name:
+          type: string
+          description: Название модуля
+        status:
+          type: string
+          description: Текущий статус модуля
+      example:
+        module_id: 7
+        device_id: 100
+        name: "Датчик движения"
+        status: "active"
+
+    ModuleStatusUpdate:
+      type: object
+      description: Обновление статуса модуля
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: Новый статус модуля
+      example:
+        status: "inactive"
